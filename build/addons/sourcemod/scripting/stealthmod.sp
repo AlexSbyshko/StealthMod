@@ -4,7 +4,10 @@
 #include <sdkhooks>
 #include <smlib>
 
-#define PLUGIN_VERSION "1.2.1"
+#include "parts"
+#include "parts/ST_(swap_teams)"
+
+#define PLUGIN_VERSION "1.2.2"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
 #define DAMAGE_FILTER_NAME "filter_no_weapons_damage"
@@ -21,7 +24,7 @@ new BombSpottedOffset
 public Plugin:myinfo = 
 {
 	name = "StealthMod",
-	author = "Alex Sang",
+	author = "Alex Sbyshko",
 	description = "CTs vs invisible terrorists",
 	version = PLUGIN_VERSION,
 	url = PLUGIN_URL
@@ -29,16 +32,21 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	HookEvent("player_spawn", Event_PlayerSpawn);
-	HookEvent("player_death", Event_PlayerDeath);
-	HookEvent("item_pickup", Event_ItemPickup);
-	HookEvent("round_start", Event_RoundStart);
-	HookEvent("round_end", Event_RoundEnd);
+	HookEvent("player_spawn", Event_PlayerSpawn)
+	HookEvent("player_death", Event_PlayerDeath)
+	HookEvent("item_pickup", Event_ItemPickup)
+	HookEvent("round_start", Event_RoundStart)
+	HookEvent("round_end", Event_RoundEnd)
+	BombSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bBombSpotted")
+	PlayerSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bPlayerSpotted")
 	
-	CreateConVar("stealthmod_version", PLUGIN_VERSION, "StealthMod Version", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_UNLOGGED|FCVAR_DONTRECORD|FCVAR_REPLICATED|FCVAR_NOTIFY);
-	
-	BombSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bBombSpotted");
-	PlayerSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bPlayerSpotted");
+	CreateConVar("stealthmod_version", PLUGIN_VERSION, "StealthMod Version", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_UNLOGGED|FCVAR_DONTRECORD|FCVAR_REPLICATED|FCVAR_NOTIFY)
+
+	InitPartSystem()
+
+	RegisterPart("ST") // Swap Teams
+
+	InitParts()		
 }
 
 public OnMapStart()
@@ -109,45 +117,7 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 
 public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	new reason = GetEventInt(event, "reason")
-	if (reason != _:CSRoundEnd_GameStart)
-	{
-		HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre)
-		SwapTeams()
-		UnhookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre)
-	}
 	return Plugin_Continue
-}
-
-SwapTeams()
-{
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientInGame(i))
-		{
-			new team = GetClientTeam(i)
-			if (team == CS_TEAM_CT)
-			{
-				CS_SwitchTeam(i, CS_TEAM_T)
-			}
-			else if (team == CS_TEAM_T)
-			{
-				CS_SwitchTeam(i, CS_TEAM_CT)
-			}
-		}
-	}
-	new tScore = GetTeamScore(CS_TEAM_T);
-	new ctScore = GetTeamScore(CS_TEAM_CT);
-	CS_SetTeamScore(CS_TEAM_T, ctScore)
-	SetTeamScore(CS_TEAM_T, ctScore)
-	CS_SetTeamScore(CS_TEAM_CT, tScore)
-	SetTeamScore(CS_TEAM_CT, tScore)
-}
-
-
-public Action:Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	return Plugin_Handled
 }
 
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
