@@ -1,10 +1,13 @@
 static Handle:CrouchWalkInvisEnabledConVar
+static Handle:InvisInAirEnabledConVar
 
 static bool:IsWalkingInvisEnabled
+static bool:IsInvisInAirEnabled
 
 public PV_Init()
 {
 	CrouchWalkInvisEnabledConVar = CreateConVar("stm_crouch_walk_invis_enabled", "1", "Enable/Disable invisibility while walking/crouching", 0, true, 0.0, true, 1.0)
+	InvisInAirEnabledConVar = CreateConVar("stm_invis_in_air_enabled", "1", "Enable/Disable invisibility while in the air", 0, true, 0.0, true, 1.0)
 }
 
 public PV_OnClientPutInServer(client)
@@ -26,6 +29,7 @@ public Action:Hook_SetTransmit(entity, client)
 public PV_Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	IsWalkingInvisEnabled = GetConVarBool(CrouchWalkInvisEnabledConVar)
+	IsInvisInAirEnabled = GetConVarBool(InvisInAirEnabledConVar)
 }
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
@@ -34,10 +38,12 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	static flags
 	flags = GetEntityFlags(client)
 	
-	if (!IsWalkingInvisEnabled || !(buttons & IN_SPEED || flags & FL_DUCKING))
+	if (!IsWalkingInvisEnabled || !(buttons & IN_SPEED || flags & FL_DUCKING)
+		|| (!(flags & FL_ONGROUND) && !IsInvisInAirEnabled))
 	{
 		if (buttons & IN_FORWARD || buttons & IN_BACK
-			|| buttons & IN_MOVELEFT || buttons & IN_MOVERIGHT)
+			|| buttons & IN_MOVELEFT || buttons & IN_MOVERIGHT
+			|| (!(flags & FL_ONGROUND) && !IsInvisInAirEnabled))
 		{
 			if (!isClientRunning[client])
 			{
@@ -132,6 +138,6 @@ SetEntityVisibility(entity, bool:visible)
 	}
 	else
 	{		
-		SetEntityRenderColor(entity, 255, 255, 255, 127);
+		SetEntityRenderColor(entity, 0, 0, 0, 127);
 	}
 }

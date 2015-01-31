@@ -6,7 +6,7 @@
 
 
 
-#define PLUGIN_VERSION "1.2.2"
+#define PLUGIN_VERSION "1.2.3"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
 #define DAMAGE_FILTER_NAME "filter_no_weapons_damage"
@@ -19,8 +19,10 @@ new PlayerManagerEntity
 new BombSpottedOffset
 
 #include "parts"
-#include "parts/ST_(swap_teams)"
 #include "parts/PV_(player_visibility)"
+#include "parts/RFS_(remove_footsteps)"
+#include "parts/ST_(swap_teams)"
+
 
 
 
@@ -47,6 +49,7 @@ public OnPluginStart()
 
 	InitPartSystem()
 
+	RegisterPart("RFS") // Remove Footsteps
 	RegisterPart("PV") // Player Visibility
 	RegisterPart("ST") // Swap Teams
 
