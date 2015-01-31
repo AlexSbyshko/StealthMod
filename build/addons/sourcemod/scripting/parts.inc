@@ -8,6 +8,7 @@ static Handle:OnEntityCreatedForward
 static Handle:OnWeaponDropForward
 static Handle:OnTerminateRoundForward
 static Handle:OnPlayerRunCmdForward
+static Handle:OnClientPutInServerForward
 static Handle:OnClientDisconnectForward
 
 // SJ
@@ -35,9 +36,10 @@ CreateGameForwards()
 	OnTerminateRoundForward = CreateForward(ET_Event, Param_FloatByRef, Param_CellByRef)
 	OnPlayerRunCmdForward = CreateForward(ET_Event, Param_Cell, Param_CellByRef)
 	OnClientDisconnectForward = CreateForward(ET_Ignore, Param_Cell)
+	OnClientPutInServerForward = CreateForward(ET_Ignore, Param_Cell)
 }
 
-RegisterCustomForward(Handle:fwd, const String:postfix[])
+public RegisterCustomForward(Handle:fwd, const String:postfix[])
 {
 	PushArrayCell(CustomForwardsArray, fwd)
 	PushArrayString(CustomForwardNamesArray, postfix)
@@ -52,6 +54,7 @@ RegisterPart(const String:partName[PART_NAME_LENGTH])
 	HookPartForward(OnWeaponDropForward, partName, "OnWeaponDrop")
 	HookPartForward(OnTerminateRoundForward, partName, "OnTerminateRound")
 	HookPartForward(OnPlayerRunCmdForward, partName, "OnPlayerRunCmd")
+	HookPartForward(OnClientPutInServerForward, partName, "OnClientPutInServer")
 	HookPartForward(OnClientDisconnectForward, partName, "OnClientDisconnect")
 
 	HookPartEvent("cs_match_end_restart", partName, "MatchEndRestart")
@@ -166,6 +169,13 @@ stock Action:FireOnPlayerRunCmd(client, &buttons)
 	new Action:result
 	Call_Finish(result)
 	return result
+}
+
+stock FireOnClientPutInServer(client)
+{	
+	Call_StartForward(OnClientPutInServerForward)
+	Call_PushCell(client)
+	Call_Finish()
 }
 
 stock FireOnClientDisconnect(client)
