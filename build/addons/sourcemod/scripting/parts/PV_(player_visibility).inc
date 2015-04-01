@@ -4,6 +4,8 @@ static Handle:InvisInAirEnabledConVar
 static bool:IsWalkingInvisEnabled
 static bool:IsInvisInAirEnabled
 
+static flags
+
 public PV_Init()
 {
 	CrouchWalkInvisEnabledConVar = CreateConVar("stm_crouch_walk_invis_enabled", "1", "Enable/Disable invisibility while walking/crouching", 0, true, 0.0, true, 1.0)
@@ -32,10 +34,10 @@ public PV_Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast
 	IsInvisInAirEnabled = GetConVarBool(InvisInAirEnabledConVar)
 }
 
+
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
 	static bool:isClientRunning[MAXPLAYERS+1]
-	static flags
 	flags = GetEntityFlags(client)
 	
 	if (!IsWalkingInvisEnabled || !(buttons & IN_SPEED || flags & FL_DUCKING)

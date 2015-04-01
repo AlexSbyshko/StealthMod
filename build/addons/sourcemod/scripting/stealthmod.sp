@@ -2,8 +2,6 @@
 #include <sdktools>
 #include <cstrike>
 #include <sdkhooks>
-#include <smlib>
-
 
 
 #define PLUGIN_VERSION "1.2.3"
