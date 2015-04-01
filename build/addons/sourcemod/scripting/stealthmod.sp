@@ -7,6 +7,7 @@
 #define PLUGIN_VERSION "1.2.3"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
+#define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
 #define DAMAGE_FILTER_NAME "filter_no_weapons_damage"
 
 new bool:IsPlayerVisible[MAXPLAYERS + 1];
@@ -17,11 +18,10 @@ new PlayerManagerEntity
 new BombSpottedOffset
 
 #include "parts"
+#include "parts/CM_(class_manager)"
 #include "parts/PV_(player_visibility)"
 #include "parts/RFS_(remove_footsteps)"
 #include "parts/ST_(swap_teams)"
-
-
 
 
 public Plugin:myinfo = 
@@ -47,6 +47,7 @@ public OnPluginStart()
 
 	InitPartSystem()
 
+	RegisterPart("CM") // Remove Footsteps
 	RegisterPart("RFS") // Remove Footsteps
 	RegisterPart("PV") // Player Visibility
 	RegisterPart("ST") // Swap Teams
