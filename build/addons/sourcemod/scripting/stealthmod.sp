@@ -22,6 +22,7 @@ new BombSpottedOffset
 #include "parts/PV_(player_visibility)"
 #include "parts/RFS_(remove_footsteps)"
 #include "parts/ST_(swap_teams)"
+#include "parts/TEST_(test)"
 
 
 public Plugin:myinfo = 
@@ -51,6 +52,7 @@ public OnPluginStart()
 	RegisterPart("RFS") // Remove Footsteps
 	RegisterPart("PV") // Player Visibility
 	RegisterPart("ST") // Swap Teams
+	RegisterPart("TEST") // Test
 
 	InitParts()
 }
@@ -101,7 +103,7 @@ public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &d
 	{
 		return Plugin_Continue;
 	}
-	return Plugin_Handled;
+	return Plugin_Handled
 }
 
 public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
