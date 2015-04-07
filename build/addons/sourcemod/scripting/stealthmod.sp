@@ -59,6 +59,7 @@ public OnPluginStart()
 
 public OnMapStart()
 {
+	FireOnMapStart()
 	RoundCounter = 0;
 	AutoExecConfig(true, "stealthmod");
 }

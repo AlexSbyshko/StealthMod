@@ -3,6 +3,7 @@
 
 static int ClassesCount
 static char Class_Name[MAX_CLASSES][CLASS_NAME_LENGTH]
+static char Class_ConfigName[MAX_CLASSES][CLASS_NAME_LENGTH]
 static int Class_StartMoney[MAX_CLASSES]
 
 methodmap STMClass
@@ -15,6 +16,16 @@ methodmap STMClass
 	property int Id
 	{
 		public get() { return view_as<int>(this); }
+	}
+
+	public void GetConfigName(char[] buffer, int maxLenght)
+	{
+		strcopy(buffer, CLASS_NAME_LENGTH, Class_ConfigName[this.Id])
+	}
+
+	public void SetConfigName(const char[] name)
+	{
+		strcopy(Class_ConfigName[this.Id], CLASS_NAME_LENGTH, name)
 	}
 
 	public void GetName(char[] buffer, int maxLenght)
@@ -54,14 +65,14 @@ methodmap STMClasses
 
 	public static STMClass Get(int id)
 	{
-		return Classes[ClassesCount]
+		return Classes[id]
 	}
 
-	public static int FindByName(const char[] name)
+	public static int FindByConfigName(const char[] name)
 	{
 		for (int i = 0; i < ClassesCount; i++)
 		{
-			if (StrEqual(name, Class_Name[i], false))
+			if (StrEqual(name, Class_ConfigName[i], false))
 			{
 				return STMClasses.Get(i).Id
 			}
@@ -96,7 +107,7 @@ methodmap STMPlayer
 
 	public void SetClassByName(const char[] name)
 	{
-		int stmClassId = STMClasses.FindByName(name)
+		int stmClassId = STMClasses.FindByConfigName(name)
 		if (stmClassId != -1)
 		{
 			STMClass stmClass = STMClasses.Get(stmClassId)
@@ -133,6 +144,11 @@ void InitDefaultClass()
 
 public CM_OnMapStart()
 {
+	ReadClassConfigs()
+}
+
+void ReadClassConfigs()
+{
 	new Handle:kv = CreateKeyValues("players")
 	FileToKeyValues(kv, "cfg/sourcemod/stealthmod/players.cfg")
 	ReadClassConfig(kv, "baseplayer", DefaultClass)
@@ -155,6 +171,7 @@ void ReadClassConfig(Handle:kv, const char[] className, STMClass baseClass)
 	PrintToChatAll("new class name: %s", name)
 
 	STMClass newSTMClass = STMClasses.Create(name)
+	newSTMClass.SetConfigName(className)
 
 	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
 	newSTMClass.SetStartMoney(startMoney)	
