@@ -118,6 +118,11 @@ methodmap STMPlayer
 			this.SetClass(DefaultClass)
 		}
 	}
+
+	public int GetStartMoney()
+	{
+		return this.GetClass().GetStartMoney()
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]

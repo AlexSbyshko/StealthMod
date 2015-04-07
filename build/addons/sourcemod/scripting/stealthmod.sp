@@ -142,14 +142,13 @@ public Action:Timer_PostPlayerSpawn(Handle:timer, any:userId)
 				StripWeapons(client)
 				GivePlayerItem(client, "item_assaultsuit")
 				SetClientInvisible(client)
-				SetClientMoney(client, 0)
 			}
 			else
 			{
 				SetClientVisible(client)
 				SetEntProp(client, Prop_Send, "m_ArmorValue", 0, 1)
-				SetClientMoney(client, 16000)
 			}
+			SetClientMoney(client, STMPlayers.Get(client).GetStartMoney())
 			IsPlayerSpawned[client] = true
 		}
 	}
