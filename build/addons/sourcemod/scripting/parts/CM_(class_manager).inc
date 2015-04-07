@@ -51,6 +51,23 @@ methodmap STMClasses
 		Classes[ClassesCount++] = newClass		
 		return newClass
 	}
+
+	public static STMClass Get(int id)
+	{
+		return Classes[ClassesCount]
+	}
+
+	public static int FindByName(const char[] name)
+	{
+		for (int i = 0; i < ClassesCount; i++)
+		{
+			if (StrEqual(name, Class_Name[i], false))
+			{
+				return STMClasses.Get(i).Id
+			}
+		}
+		return -1
+	}
 }
 
 static STMClass Player_Class[MAXPLAYERS+1]
@@ -76,6 +93,20 @@ methodmap STMPlayer
 	{
 		Player_Class[this.Id] = stmClass
 	}
+
+	public void SetClassByName(const char[] name)
+	{
+		int stmClassId = STMClasses.FindByName(name)
+		if (stmClassId != -1)
+		{
+			STMClass stmClass = STMClasses.Get(stmClassId)
+			this.SetClass(stmClass)
+		}
+		else
+		{
+			this.SetClass(DefaultClass)
+		}
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]
@@ -83,7 +114,7 @@ static STMPlayer Players[MAXPLAYERS+1]
 
 methodmap STMPlayers
 {
-	public STMPlayer Get(int id)
+	public static STMPlayer Get(int id)
 	{
 		return Players[id]
 	}
@@ -96,7 +127,7 @@ public CM_Init()
 
 void InitDefaultClass()
 {
-	DefaultClass = STMClasses.Create("defaultClass")
+	DefaultClass = STMClasses.Create("DefaultClass")
 	DefaultClass.SetStartMoney(100)
 }
 
@@ -114,7 +145,7 @@ void ReadClassConfig(Handle:kv, const char[] className, STMClass baseClass)
 	if (!KvJumpToKey(kv, className))
 	{
 		PrintToChatAll("class %s not found!", className)
-		return;
+		return
 	}
 
 	PrintToChatAll("read class %s", className)
@@ -143,4 +174,20 @@ void ReadClassConfig(Handle:kv, const char[] className, STMClass baseClass)
 		}
 	}	
 	PrintToChatAll("end load class: %s", name)
+}
+
+public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	new client = GetClientOfUserId(GetEventInt(event, "userid"))
+	new team = GetEventInt(event, "team");
+	STMPlayer player = STMPlayers.Get(client)
+	switch (team)
+	{
+		case CS_TEAM_T:
+			player.SetClassByName("terrorist")
+		case CS_TEAM_CT:
+			player.SetClassByName("counter-terrorist")
+		default:
+			player.SetClassByName("baseplayer")
+	}
 }

@@ -67,13 +67,16 @@ public OnClientPutInServer(client)
 {
 	FireOnClientPutInServer(client)
 	
-	SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
+	SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage)
 	if (BombSpottedOffset != -1 && PlayerSpottedOffset != -1)
 	{
-		SDKHook(client, SDKHook_PreThink, Hook_PreThink);
+		SDKHook(client, SDKHook_PreThink, Hook_PreThink)
 	}	
-	CreateTimer(5.0, Timer_PrintModInfo, GetClientUserId(client));
-	IsPlayerSpawned[client] = false;
+	CreateTimer(5.0, Timer_PrintModInfo, GetClientUserId(client))
+	IsPlayerSpawned[client] = false
+
+	STMPlayer player = STMPlayers.Get(client)
+	player.SetClassByName("baseplayer")
 }
 
 public Hook_PreThink(client)
@@ -95,7 +98,6 @@ public Action:Timer_PrintModInfo(Handle:timer, any:userId)
 	}
 	return Plugin_Continue;
 }
-
 
 public Action:Hook_OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
 {
