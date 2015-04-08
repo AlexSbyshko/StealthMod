@@ -271,6 +271,9 @@ void ReadClassConfig2(Handle kv, const char[] classConfigName, const char[] base
 	PrintToChatAll("read class %s", classConfigName)
 
 	char name[CLASS_NAME_LENGTH]
+	baseClass.GetName(name, CLASS_NAME_LENGTH)
+	PrintToChatAll("base class name: %s", name)
+
 	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, classConfigName)
 	PrintToChatAll("new class name: %s", name)
 
@@ -281,19 +284,6 @@ void ReadClassConfig2(Handle kv, const char[] classConfigName, const char[] base
 	newSTMClass.SetStartMoney(startMoney)	
 	PrintToChatAll("money: %i", startMoney)
 
-	char buffer[256]
-
-	KvGetString(kv, "inherited", buffer, sizeof(buffer), "")
-	if (!StrEqual(buffer, ""))
-	{
-		char inheritedClassNames[MAX_CLASSES][CLASS_NAME_LENGTH]
-		int classCount = ExplodeString(buffer, ",", inheritedClassNames, MAX_CLASSES, CLASS_NAME_LENGTH)
-		PrintToChatAll("inherited classes count: %i", classCount)
-		for (int i = 0; i < classCount; i++)
-		{
-			ReadClassConfig(kv, inheritedClassNames[i], newSTMClass)
-		}
-	}	
 	PrintToChatAll("end load class: %s", name)
 }
 
