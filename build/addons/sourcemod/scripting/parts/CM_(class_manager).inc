@@ -5,6 +5,9 @@ static int ClassesCount
 static char Class_Name[MAX_CLASSES][CLASS_NAME_LENGTH]
 static char Class_ConfigName[MAX_CLASSES][CLASS_NAME_LENGTH]
 static int Class_StartMoney[MAX_CLASSES]
+static int Class_MaxHealth[MAX_CLASSES]
+static int Class_HealthRegenAmount[MAX_CLASSES]
+static float Class_HealthRegenPeriod[MAX_CLASSES]
 
 methodmap STMClass
 {
@@ -28,6 +31,7 @@ methodmap STMClass
 		strcopy(Class_ConfigName[this.Id], CLASS_NAME_LENGTH, name)
 	}
 
+
 	public void GetName(char[] buffer, int maxLenght)
 	{
 		strcopy(buffer, CLASS_NAME_LENGTH, Class_Name[this.Id])
@@ -38,6 +42,7 @@ methodmap STMClass
 		strcopy(Class_Name[this.Id], CLASS_NAME_LENGTH, name)
 	}
 
+
 	public int GetStartMoney()
 	{
 		return Class_StartMoney[this.Id]
@@ -46,6 +51,39 @@ methodmap STMClass
 	public void SetStartMoney(int value)
 	{
 		Class_StartMoney[this.Id] = value
+	}
+
+
+	public int GetMaxHealth()
+	{
+		return Class_MaxHealth[this.Id]
+	}
+
+	public void SetMaxHealth(int value)
+	{
+		Class_MaxHealth[this.Id] = value
+	}
+
+
+	public int GetHealthRegenAmount()
+	{
+		return Class_HealthRegenAmount[this.Id]
+	}
+
+	public void SetHealthRegenAmount(int value)
+	{
+		Class_HealthRegenAmount[this.Id] = value
+	}
+
+
+	public float GetHealthRegenPeriod()
+	{
+		return Class_HealthRegenPeriod[this.Id]
+	}
+
+	public void SetHealthRegenPeriod(float value)
+	{
+		Class_HealthRegenPeriod[this.Id] = value
 	}
 }
 
@@ -123,6 +161,21 @@ methodmap STMPlayer
 	{
 		return this.GetClass().GetStartMoney()
 	}
+
+	public int GetMaxHealth()
+	{
+		return this.GetClass().GetMaxHealth()
+	}
+
+	public int GetHealthRegenAmount()
+	{
+		return this.GetClass().GetHealthRegenAmount()
+	}
+
+	public float GetHealthRegenPeriod()
+	{
+		return this.GetClass().GetHealthRegenPeriod()
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]
@@ -152,58 +205,13 @@ public CM_OnMapStart()
 	ReadClassConfigs()
 }
 
+
 void ReadClassConfigs()
-{
-	new Handle:kv = CreateKeyValues("players")
-	FileToKeyValues(kv, "cfg/sourcemod/stealthmod/players.cfg")
-	ReadClassConfig(kv, "baseplayer", DefaultClass)
-	CloseHandle(kv)
-}
-
-void ReadClassConfig(Handle:kv, const char[] className, STMClass baseClass)
-{
-	KvRewind(kv)
-	if (!KvJumpToKey(kv, className))
-	{
-		PrintToChatAll("class %s not found!", className)
-		return
-	}
-
-	PrintToChatAll("read class %s", className)
-
-	char name[CLASS_NAME_LENGTH]
-	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, className)
-	PrintToChatAll("new class name: %s", name)
-
-	STMClass newSTMClass = STMClasses.Create(name)
-	newSTMClass.SetConfigName(className)
-
-	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
-	newSTMClass.SetStartMoney(startMoney)	
-	PrintToChatAll("money: %i", startMoney)
-
-	char buffer[256]
-
-	KvGetString(kv, "inherited", buffer, sizeof(buffer), "")
-	if (!StrEqual(buffer, ""))
-	{
-		char inheritedClassNames[MAX_CLASSES][CLASS_NAME_LENGTH]
-		int classCount = ExplodeString(buffer, ",", inheritedClassNames, MAX_CLASSES, CLASS_NAME_LENGTH)
-		PrintToChatAll("inherited classes count: %i", classCount)
-		for (int i = 0; i < classCount; i++)
-		{
-			ReadClassConfig(kv, inheritedClassNames[i], newSTMClass)
-		}
-	}	
-	PrintToChatAll("end load class: %s", name)
-}
-
-void ReadClassConfigs2()
 {
 	Handle kv = CreateKeyValues("players")
 	FileToKeyValues(kv, "cfg/sourcemod/stealthmod/players.cfg")
 
-	new Handle:configsArray = CreateArray()
+	new Handle:configsArray = CreateArray(CLASS_NAME_LENGTH)
 	new Handle:baseConfigByConfig = CreateTrie()
 
 	if (KvGotoFirstSubKey(kv))
@@ -234,14 +242,16 @@ void ReadClassConfigs2()
 			char baseConfigName[CLASS_NAME_LENGTH] = ""
 			GetTrieString(baseConfigByConfig, configName, baseConfigName, CLASS_NAME_LENGTH)
 
-			if (!StrEqual(baseConfigName, "") && FindStringInArray(remainingConfigsArray, baseConfigName))
+			PrintToChatAll("from cache: config %s with base %s", configName, baseConfigName)
+
+			if (!StrEqual(baseConfigName, "") && FindStringInArray(remainingConfigsArray, baseConfigName) != -1)
 			{
 				PrintToChatAll("skip config %s with base %s", configName, baseConfigName)
 				continue
 			}
 			PrintToChatAll("read config %s with base %s", configName, baseConfigName)
 
-			ReadClassConfig2(kv, configName, baseConfigName)
+			ReadClassConfig(kv, configName, baseConfigName)
 			RemoveFromArray(remainingConfigsArray, i)
 		}
 	}
@@ -252,7 +262,7 @@ void ReadClassConfigs2()
 	CloseHandle(kv)
 }
 
-void ReadClassConfig2(Handle kv, const char[] classConfigName, const char[] baseClassConfigName)
+void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseClassConfigName)
 {
 	KvRewind(kv)
 	if (!KvJumpToKey(kv, classConfigName))
@@ -274,7 +284,7 @@ void ReadClassConfig2(Handle kv, const char[] classConfigName, const char[] base
 	PrintToChatAll("read class %s", classConfigName)
 
 	char name[CLASS_NAME_LENGTH]
-	baseClass.GetName(name, CLASS_NAME_LENGTH)
+	baseClass.GetConfigName(name, CLASS_NAME_LENGTH)
 	PrintToChatAll("base class name: %s", name)
 
 	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, classConfigName)
@@ -284,8 +294,17 @@ void ReadClassConfig2(Handle kv, const char[] classConfigName, const char[] base
 	newSTMClass.SetConfigName(classConfigName)
 
 	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
-	newSTMClass.SetStartMoney(startMoney)	
-	PrintToChatAll("money: %i", startMoney)
+	newSTMClass.SetStartMoney(startMoney)
+
+
+	int maxHealth = KvGetNum(kv, "max_health", baseClass.GetMaxHealth())
+	newSTMClass.SetMaxHealth(maxHealth)
+
+	int healthRegenAmount = KvGetNum(kv, "hp_regen_amount", baseClass.GetHealthRegenAmount())
+	newSTMClass.SetHealthRegenAmount(healthRegenAmount)
+
+	float healthRegenPeriod = KvGetFloat(kv, "hp_regen_period", baseClass.GetHealthRegenPeriod())
+	newSTMClass.SetHealthRegenPeriod(healthRegenPeriod)
 
 	PrintToChatAll("end load class: %s", name)
 }

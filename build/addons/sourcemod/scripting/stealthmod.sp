@@ -19,6 +19,8 @@ new BombSpottedOffset
 
 #include "parts"
 #include "parts/CM_(class_manager)"
+#include "parts/HR_(health_regen)"
+#include "parts/MH_(max_health)"
 #include "parts/PV_(player_visibility)"
 #include "parts/RFS_(remove_footsteps)"
 #include "parts/ST_(swap_teams)"
@@ -49,6 +51,8 @@ public OnPluginStart()
 	InitPartSystem()
 
 	RegisterPart("CM") // Remove Footsteps
+	RegisterPart("HR") // Health Regen
+	RegisterPart("MH") // Max Health
 	RegisterPart("RFS") // Remove Footsteps
 	RegisterPart("PV") // Player Visibility
 	RegisterPart("ST") // Swap Teams
