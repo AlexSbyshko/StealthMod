@@ -149,7 +149,7 @@ void InitDefaultClass()
 
 public CM_OnMapStart()
 {
-	ReadClassConfigs2()
+	ReadClassConfigs()
 }
 
 void ReadClassConfigs()
@@ -231,13 +231,15 @@ void ReadClassConfigs2()
 			char configName[CLASS_NAME_LENGTH]
 			GetArrayString(remainingConfigsArray, i, configName, CLASS_NAME_LENGTH)	
 
-			char baseConfigName[CLASS_NAME_LENGTH]
+			char baseConfigName[CLASS_NAME_LENGTH] = ""
 			GetTrieString(baseConfigByConfig, configName, baseConfigName, CLASS_NAME_LENGTH)
 
 			if (!StrEqual(baseConfigName, "") && FindStringInArray(remainingConfigsArray, baseConfigName))
 			{
 				continue
 			}
+			PrintToChatAll("read config %s with base %s", configName, baseConfigName)
+
 			ReadClassConfig2(kv, configName, baseConfigName)
 			RemoveFromArray(remainingConfigsArray, i)
 		}
