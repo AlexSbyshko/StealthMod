@@ -149,7 +149,7 @@ void InitDefaultClass()
 
 public CM_OnMapStart()
 {
-	ReadClassConfigs()
+	ReadClassConfigs2()
 }
 
 void ReadClassConfigs()
@@ -177,6 +177,105 @@ void ReadClassConfig(Handle:kv, const char[] className, STMClass baseClass)
 
 	STMClass newSTMClass = STMClasses.Create(name)
 	newSTMClass.SetConfigName(className)
+
+	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
+	newSTMClass.SetStartMoney(startMoney)	
+	PrintToChatAll("money: %i", startMoney)
+
+	char buffer[256]
+
+	KvGetString(kv, "inherited", buffer, sizeof(buffer), "")
+	if (!StrEqual(buffer, ""))
+	{
+		char inheritedClassNames[MAX_CLASSES][CLASS_NAME_LENGTH]
+		int classCount = ExplodeString(buffer, ",", inheritedClassNames, MAX_CLASSES, CLASS_NAME_LENGTH)
+		PrintToChatAll("inherited classes count: %i", classCount)
+		for (int i = 0; i < classCount; i++)
+		{
+			ReadClassConfig(kv, inheritedClassNames[i], newSTMClass)
+		}
+	}	
+	PrintToChatAll("end load class: %s", name)
+}
+
+void ReadClassConfigs2()
+{
+	Handle kv = CreateKeyValues("players")
+	FileToKeyValues(kv, "cfg/sourcemod/stealthmod/players.cfg")
+
+	new Handle:configsArray = CreateArray()
+	new Handle:baseConfigByConfig = CreateTrie()
+
+	if (KvGotoFirstSubKey(kv))
+	{	
+		char configName[CLASS_NAME_LENGTH]
+		char baseConfigName[CLASS_NAME_LENGTH]
+		do
+		{
+			KvGetSectionName(kv, configName, CLASS_NAME_LENGTH)
+			KvGetString(kv, "base", baseConfigName, CLASS_NAME_LENGTH, "")
+			
+			PushArrayString(configsArray, configName)
+			SetTrieString(baseConfigByConfig, configName, baseConfigName)
+		}
+		while (KvGotoNextKey(kv))
+	}
+
+	new Handle:remainingConfigsArray = CloneArray(configsArray)
+
+	while (GetArraySize(remainingConfigsArray) > 0)
+	{
+		int currentCount = GetArraySize(remainingConfigsArray)
+		for (int i = currentCount - 1; i >= 0; i --)
+		{
+			char configName[CLASS_NAME_LENGTH]
+			GetArrayString(remainingConfigsArray, i, configName, CLASS_NAME_LENGTH)	
+
+			char baseConfigName[CLASS_NAME_LENGTH]
+			GetTrieString(baseConfigByConfig, configName, baseConfigName, CLASS_NAME_LENGTH)
+
+			if (!StrEqual(baseConfigName, "") && FindStringInArray(remainingConfigsArray, baseConfigName))
+			{
+				continue
+			}
+			ReadClassConfig2(kv, configName, baseConfigName)
+			RemoveFromArray(remainingConfigsArray, i)
+		}
+	}
+
+	CloseHandle(baseConfigByConfig)
+	CloseHandle(remainingConfigsArray)
+	CloseHandle(configsArray)
+	CloseHandle(kv)
+}
+
+void ReadClassConfig2(Handle kv, const char[] classConfigName, const char[] baseClassConfigName)
+{
+	KvRewind(kv)
+	if (!KvJumpToKey(kv, classConfigName))
+	{
+		PrintToChatAll("class %s not found!", classConfigName)
+		return
+	}
+	STMClass baseClass
+	int baseClassId = STMClasses.FindByConfigName(baseClassConfigName)
+	if (baseClassId != -1)
+	{
+		baseClass = STMClasses.Get(baseClassId)
+	}
+	else
+	{
+		baseClass = DefaultClass
+	}
+
+	PrintToChatAll("read class %s", classConfigName)
+
+	char name[CLASS_NAME_LENGTH]
+	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, classConfigName)
+	PrintToChatAll("new class name: %s", name)
+
+	STMClass newSTMClass = STMClasses.Create(name)
+	newSTMClass.SetConfigName(classConfigName)
 
 	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
 	newSTMClass.SetStartMoney(startMoney)	
