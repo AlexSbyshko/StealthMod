@@ -236,6 +236,7 @@ void ReadClassConfigs2()
 
 			if (!StrEqual(baseConfigName, "") && FindStringInArray(remainingConfigsArray, baseConfigName))
 			{
+				PrintToChatAll("skip config %s with base %s", configName, baseConfigName)
 				continue
 			}
 			PrintToChatAll("read config %s with base %s", configName, baseConfigName)
