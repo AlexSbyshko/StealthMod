@@ -23,6 +23,7 @@ new BombSpottedOffset
 #include "parts/MH_(max_health)"
 #include "parts/PV_(player_visibility)"
 #include "parts/RFS_(remove_footsteps)"
+#include "parts/SG_(speed_and_gravity)"
 #include "parts/ST_(swap_teams)"
 #include "parts/TEST_(test)"
 
@@ -55,6 +56,7 @@ public OnPluginStart()
 	RegisterPart("MH") // Max Health
 	RegisterPart("RFS") // Remove Footsteps
 	RegisterPart("PV") // Player Visibility
+	RegisterPart("SG") // Speed and Gravity
 	RegisterPart("ST") // Swap Teams
 	RegisterPart("TEST") // Test
 

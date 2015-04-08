@@ -8,6 +8,8 @@ static int Class_StartMoney[MAX_CLASSES]
 static int Class_MaxHealth[MAX_CLASSES]
 static int Class_HealthRegenAmount[MAX_CLASSES]
 static float Class_HealthRegenPeriod[MAX_CLASSES]
+static float Class_SpeedMultiplier[MAX_CLASSES]
+static float Class_GravityMultiplier[MAX_CLASSES]
 
 methodmap STMClass
 {
@@ -84,6 +86,28 @@ methodmap STMClass
 	public void SetHealthRegenPeriod(float value)
 	{
 		Class_HealthRegenPeriod[this.Id] = value
+	}
+
+
+	public float GetSpeedMultiplier()
+	{
+		return Class_SpeedMultiplier[this.Id]
+	}
+
+	public void SetSpeedMultiplier(float value)
+	{
+		Class_SpeedMultiplier[this.Id] = value
+	}
+
+
+	public float GetGravityMultiplier()
+	{
+		return Class_GravityMultiplier[this.Id]
+	}
+
+	public void SetGravityMultiplier(float value)
+	{
+		Class_GravityMultiplier[this.Id] = value
 	}
 }
 
@@ -176,6 +200,16 @@ methodmap STMPlayer
 	{
 		return this.GetClass().GetHealthRegenPeriod()
 	}
+
+	public float GetSpeedMultiplier()
+	{
+		return this.GetClass().GetSpeedMultiplier()
+	}
+
+	public float GetGravityMultiplier()
+	{
+		return this.GetClass().GetGravityMultiplier()
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]
@@ -242,14 +276,10 @@ void ReadClassConfigs()
 			char baseConfigName[CLASS_NAME_LENGTH] = ""
 			GetTrieString(baseConfigByConfig, configName, baseConfigName, CLASS_NAME_LENGTH)
 
-			PrintToChatAll("from cache: config %s with base %s", configName, baseConfigName)
-
 			if (!StrEqual(baseConfigName, "") && FindStringInArray(remainingConfigsArray, baseConfigName) != -1)
 			{
-				PrintToChatAll("skip config %s with base %s", configName, baseConfigName)
 				continue
 			}
-			PrintToChatAll("read config %s with base %s", configName, baseConfigName)
 
 			ReadClassConfig(kv, configName, baseConfigName)
 			RemoveFromArray(remainingConfigsArray, i)
@@ -267,7 +297,6 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 	KvRewind(kv)
 	if (!KvJumpToKey(kv, classConfigName))
 	{
-		PrintToChatAll("class %s not found!", classConfigName)
 		return
 	}
 	STMClass baseClass
@@ -281,14 +310,10 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 		baseClass = DefaultClass
 	}
 
-	PrintToChatAll("read class %s", classConfigName)
-
 	char name[CLASS_NAME_LENGTH]
 	baseClass.GetConfigName(name, CLASS_NAME_LENGTH)
-	PrintToChatAll("base class name: %s", name)
 
 	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, classConfigName)
-	PrintToChatAll("new class name: %s", name)
 
 	STMClass newSTMClass = STMClasses.Create(name)
 	newSTMClass.SetConfigName(classConfigName)
@@ -306,7 +331,11 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 	float healthRegenPeriod = KvGetFloat(kv, "hp_regen_period", baseClass.GetHealthRegenPeriod())
 	newSTMClass.SetHealthRegenPeriod(healthRegenPeriod)
 
-	PrintToChatAll("end load class: %s", name)
+	float gravityMultiplier = KvGetFloat(kv, "gravity_multiplier", baseClass.GetGravityMultiplier())
+	newSTMClass.SetGravityMultiplier(gravityMultiplier)
+
+	float speedMultiplier = KvGetFloat(kv, "speed_multiplier", baseClass.GetSpeedMultiplier())
+	newSTMClass.SetSpeedMultiplier(speedMultiplier)
 }
 
 public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
