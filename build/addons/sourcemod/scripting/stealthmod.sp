@@ -4,7 +4,7 @@
 #include <sdkhooks>
 
 
-#define PLUGIN_VERSION "1.2.3"
+#define PLUGIN_VERSION "1.3.0"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
 #define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
