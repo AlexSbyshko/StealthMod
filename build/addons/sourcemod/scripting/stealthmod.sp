@@ -4,7 +4,7 @@
 #include <sdkhooks>
 
 
-#define PLUGIN_VERSION "1.3.0"
+#define PLUGIN_VERSION "1.3.1"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
 #define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
@@ -17,8 +17,11 @@ new PlayerSpottedOffset
 new PlayerManagerEntity
 new BombSpottedOffset
 
-#include "parts"
+#include "emitsoundany"
 #include "parts/CM_(class_manager)"
+#include "parts"
+
+#include "parts/BS_(breath_sound)"
 #include "parts/HR_(health_regen)"
 #include "parts/MH_(max_health)"
 #include "parts/PV_(player_visibility)"
@@ -51,6 +54,7 @@ public OnPluginStart()
 
 	InitPartSystem()
 
+	RegisterPart("BS") // Breath Sound
 	RegisterPart("CM") // Remove Footsteps
 	RegisterPart("HR") // Health Regen
 	RegisterPart("MH") // Max Health
@@ -58,7 +62,7 @@ public OnPluginStart()
 	RegisterPart("PV") // Player Visibility
 	RegisterPart("SG") // Speed and Gravity
 	RegisterPart("ST") // Swap Teams
-	RegisterPart("TEST") // Test
+	//RegisterPart("TEST") // Test
 
 	InitParts()
 }

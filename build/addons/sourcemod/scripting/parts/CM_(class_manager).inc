@@ -10,6 +10,7 @@ static int Class_HealthRegenAmount[MAX_CLASSES]
 static float Class_HealthRegenPeriod[MAX_CLASSES]
 static float Class_SpeedMultiplier[MAX_CLASSES]
 static float Class_GravityMultiplier[MAX_CLASSES]
+static bool Class_IsProducesBreathSound[MAX_CLASSES]
 
 methodmap STMClass
 {
@@ -108,6 +109,17 @@ methodmap STMClass
 	public void SetGravityMultiplier(float value)
 	{
 		Class_GravityMultiplier[this.Id] = value
+	}
+
+
+	public bool IsProducesBreathSound()
+	{
+		return Class_IsProducesBreathSound[this.Id]
+	}
+
+	public void SetProducesBreathSound(bool value)
+	{
+		Class_IsProducesBreathSound[this.Id] = value
 	}
 }
 
@@ -210,6 +222,11 @@ methodmap STMPlayer
 	{
 		return this.GetClass().GetGravityMultiplier()
 	}
+
+	public bool IsProducesBreathSound()
+	{
+		return this.GetClass().IsProducesBreathSound()
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]
@@ -232,6 +249,7 @@ void InitDefaultClass()
 {
 	DefaultClass = STMClasses.Create("DefaultClass")
 	DefaultClass.SetStartMoney(100)
+	DefaultClass.SetProducesBreathSound(false)
 }
 
 public CM_OnMapStart()
@@ -336,6 +354,9 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	float speedMultiplier = KvGetFloat(kv, "speed_multiplier", baseClass.GetSpeedMultiplier())
 	newSTMClass.SetSpeedMultiplier(speedMultiplier)
+
+	bool isProducesBrathSound = KvGetNum(kv, "produces_breath_sound", baseClass.IsProducesBreathSound()) > 0
+	newSTMClass.SetProducesBreathSound(isProducesBrathSound)
 }
 
 public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)

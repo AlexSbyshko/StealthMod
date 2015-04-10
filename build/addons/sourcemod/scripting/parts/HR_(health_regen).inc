@@ -18,7 +18,8 @@ public HR_Event_MatchEndRestart(Handle:event, const String:name[], bool:dontBroa
 
 public HR_Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {	
-	new client = GetClientOfUserId(GetEventInt(event, "userid"))
+	int userId = GetEventInt(event, "userid")
+	new client = GetClientOfUserId(userId)
 	new team = GetClientTeam(client)
 	if (team != CS_TEAM_NONE && IsPlayerAlive(client))
 	{
@@ -26,7 +27,7 @@ public HR_Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcas
 		float healthRegenPeriod = STMPlayers.Get(client).GetHealthRegenPeriod()
 		if (healthRegenPeriod > 0)
 		{
-			HealthRegenTimers[client] = CreateTimer(healthRegenPeriod, Timer_RegenHealth, client, TIMER_REPEAT)
+			HealthRegenTimers[client] = CreateTimer(healthRegenPeriod, Timer_RegenHealth, userId, TIMER_REPEAT)
 		}	
 	}
 }
@@ -37,9 +38,10 @@ public HR_Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcas
 	StopClientHPRegen(client)
 }
 
-public Action:Timer_RegenHealth(Handle:timer, any:client)
+public Action:Timer_RegenHealth(Handle:timer, any:userId)
 {	
-	if (IsClientInGame(client) && IsPlayerAlive(client))
+	new client = GetClientOfUserId(userId)
+	if (client && IsPlayerAlive(client))
 	{
 		int health = GetEntProp(client, Prop_Data, "m_iHealth")
 		int maxHealth = STMPlayers.Get(client).GetMaxHealth()
