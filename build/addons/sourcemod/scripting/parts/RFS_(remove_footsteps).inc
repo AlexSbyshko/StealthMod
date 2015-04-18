@@ -1,8 +1,5 @@
-static Handle:TFootstepsEnabledConVar
-
 public RFS_Init()
 {
-	TFootstepsEnabledConVar = CreateConVar("stm_t_footsteps_enabled", "0", "Enable/Disable Terrorists footsteps", 0, true, 0.0, true, 1.0)
 	AddNormalSoundHook(RFS_Event_SoundPlayed)
 }
 
@@ -21,8 +18,7 @@ public Action:RFS_Event_SoundPlayed(clients[64],&numClients,String:sample[PLATFO
 		&& (StrContains(sample, "physics") != -1 || StrContains(sample, "footsteps") != -1))
 	{
 		if (IsClientInGame(entity) 
-			&& GetClientTeam(entity) == CS_TEAM_T 
-			&& !GetConVarBool(TFootstepsEnabledConVar))
+			&& !STMPlayers.Get(entity).IsFootStepsEnabled())
 		{
 			return Plugin_Handled
 		}

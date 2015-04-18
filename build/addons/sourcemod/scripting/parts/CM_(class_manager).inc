@@ -11,6 +11,7 @@ static float Class_HealthRegenPeriod[MAX_CLASSES]
 static float Class_SpeedMultiplier[MAX_CLASSES]
 static float Class_GravityMultiplier[MAX_CLASSES]
 static bool Class_IsProducesBreathSound[MAX_CLASSES]
+static bool Class_IsFootStepsEnabled[MAX_CLASSES]
 
 methodmap STMClass
 {
@@ -121,6 +122,17 @@ methodmap STMClass
 	{
 		Class_IsProducesBreathSound[this.Id] = value
 	}
+
+
+	public void SetFootstepsEnabled(bool value)
+	{
+		Class_IsFootStepsEnabled[this.Id] = value
+	}
+
+	public bool IsFootStepsEnabled()
+	{
+		return Class_IsFootStepsEnabled[this.Id]
+	}
 }
 
 
@@ -227,6 +239,11 @@ methodmap STMPlayer
 	{
 		return this.GetClass().IsProducesBreathSound()
 	}
+
+	public bool IsFootStepsEnabled()
+	{
+		return this.GetClass().IsFootStepsEnabled()
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]
@@ -250,6 +267,7 @@ void InitDefaultClass()
 	DefaultClass = STMClasses.Create("DefaultClass")
 	DefaultClass.SetStartMoney(100)
 	DefaultClass.SetProducesBreathSound(false)
+	DefaultClass.SetFootstepsEnabled(true)
 }
 
 public CM_OnMapStart()
@@ -357,6 +375,9 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	bool isProducesBrathSound = KvGetNum(kv, "produces_breath_sound", baseClass.IsProducesBreathSound()) > 0
 	newSTMClass.SetProducesBreathSound(isProducesBrathSound)
+
+	bool isFootStepsEnabled = KvGetNum(kv, "footsteps_enabled", baseClass.IsFootStepsEnabled()) > 0
+	newSTMClass.SetFootstepsEnabled(isFootStepsEnabled)
 }
 
 public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
