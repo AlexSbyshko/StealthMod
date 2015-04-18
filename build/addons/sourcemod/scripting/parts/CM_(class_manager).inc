@@ -12,6 +12,9 @@ static float Class_SpeedMultiplier[MAX_CLASSES]
 static float Class_GravityMultiplier[MAX_CLASSES]
 static bool Class_IsProducesBreathSound[MAX_CLASSES]
 static bool Class_IsFootStepsEnabled[MAX_CLASSES]
+static bool Class_IsInvisNotMoving[MAX_CLASSES]
+static bool Class_IsInvisInAir[MAX_CLASSES]
+static bool Class_IsInvisWalking[MAX_CLASSES]
 
 methodmap STMClass
 {
@@ -133,6 +136,39 @@ methodmap STMClass
 	{
 		return Class_IsFootStepsEnabled[this.Id]
 	}
+
+
+	public void SetInvisNotMoving(bool value)
+	{
+		Class_IsInvisNotMoving[this.Id] = value
+	}
+
+	public bool IsInvisNotMoving()
+	{
+		return Class_IsInvisNotMoving[this.Id]
+	}
+
+
+	public void SetInvisInAir(bool value)
+	{
+		Class_IsInvisInAir[this.Id] = value
+	}
+
+	public bool IsInvisInAir()
+	{
+		return Class_IsInvisInAir[this.Id]
+	}
+
+
+	public void SetInvisWalking(bool value)
+	{
+		Class_IsInvisWalking[this.Id] = value
+	}
+
+	public bool IsInvisWalking()
+	{
+		return Class_IsInvisWalking[this.Id]
+	}
 }
 
 
@@ -244,6 +280,21 @@ methodmap STMPlayer
 	{
 		return this.GetClass().IsFootStepsEnabled()
 	}
+
+	public bool IsInvisNotMoving()
+	{
+		return this.GetClass().IsInvisNotMoving()
+	}
+
+	public bool IsInvisInAir()
+	{
+		return this.GetClass().IsInvisInAir()
+	}
+
+	public bool IsInvisWalking()
+	{
+		return this.GetClass().IsInvisWalking()
+	}
 }
 
 static STMPlayer Players[MAXPLAYERS+1]
@@ -259,6 +310,10 @@ methodmap STMPlayers
 
 public CM_Init()
 {
+	for (int i = 1; i < MaxClients; i++)
+	{
+		Players[i] = STMPlayer(i)
+	}
 	InitDefaultClass()
 }
 
@@ -268,6 +323,9 @@ void InitDefaultClass()
 	DefaultClass.SetStartMoney(100)
 	DefaultClass.SetProducesBreathSound(false)
 	DefaultClass.SetFootstepsEnabled(true)
+	DefaultClass.SetInvisNotMoving(false)
+	DefaultClass.SetInvisInAir(false)
+	DefaultClass.SetInvisWalking(false)
 }
 
 public CM_OnMapStart()
@@ -357,7 +415,6 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
 	newSTMClass.SetStartMoney(startMoney)
 
-
 	int maxHealth = KvGetNum(kv, "max_health", baseClass.GetMaxHealth())
 	newSTMClass.SetMaxHealth(maxHealth)
 
@@ -378,6 +435,15 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	bool isFootStepsEnabled = KvGetNum(kv, "footsteps_enabled", baseClass.IsFootStepsEnabled()) > 0
 	newSTMClass.SetFootstepsEnabled(isFootStepsEnabled)
+
+	bool isInvisNotMoving = KvGetNum(kv, "is_invisible_when_not_moving", baseClass.IsInvisNotMoving()) > 0
+	newSTMClass.SetInvisNotMoving(isInvisNotMoving)
+
+	bool isInvisInAir = KvGetNum(kv, "is_invisible_in_the_air", baseClass.IsInvisInAir()) > 0
+	newSTMClass.SetInvisInAir(isInvisInAir)
+
+	bool isInvisWalking = KvGetNum(kv, "is_invisible_when_walking", baseClass.IsInvisWalking()) > 0
+	newSTMClass.SetInvisWalking(isInvisWalking)
 }
 
 public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
@@ -390,13 +456,20 @@ public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast
 SetPlayerClassByTeam(int client, int team)
 {
 	STMPlayer player = STMPlayers.Get(client)
+	
 	switch (team)
 	{
 		case CS_TEAM_T:
+		{
 			player.SetClassByName("terrorist")			
+		}
 		case CS_TEAM_CT:
+		{
 			player.SetClassByName("counter-terrorist")
+		}
 		default:
+		{
 			player.SetClassByName("baseplayer")
+		}
 	}
 }

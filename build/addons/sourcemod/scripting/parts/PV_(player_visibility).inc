@@ -1,15 +1,5 @@
-static Handle:CrouchWalkInvisEnabledConVar
-static Handle:InvisInAirEnabledConVar
-
-static bool:IsWalkingInvisEnabled
-static bool:IsInvisInAirEnabled
-
-static flags
-
 public PV_Init()
 {
-	CrouchWalkInvisEnabledConVar = CreateConVar("stm_crouch_walk_invis_enabled", "1", "Enable/Disable invisibility while walking/crouching", 0, true, 0.0, true, 1.0)
-	InvisInAirEnabledConVar = CreateConVar("stm_invis_in_air_enabled", "1", "Enable/Disable invisibility while in the air", 0, true, 0.0, true, 1.0)
 }
 
 public PV_OnClientPutInServer(client)
@@ -19,90 +9,87 @@ public PV_OnClientPutInServer(client)
 
 public Action:Hook_SetTransmit(entity, client) 
 {
-	if (client != entity
-		&& IsAliveCT(client)
+	if (client == entity
+		|| !IsPlayerAlive(client))
+	{
+		return Plugin_Continue
+	}
+
+	if (IsEnemy(entity, client)
 		&& !IsPlayerVisible[entity])
 	{
-		return Plugin_Handled; 
+		return Plugin_Handled
 	}
-	return Plugin_Continue; 
-}
-
-public PV_Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	IsWalkingInvisEnabled = GetConVarBool(CrouchWalkInvisEnabledConVar)
-	IsInvisInAirEnabled = GetConVarBool(InvisInAirEnabledConVar)
+	return Plugin_Continue
 }
 
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
-	static bool:isClientRunning[MAXPLAYERS+1]
-	flags = GetEntityFlags(client)
-	
-	if (!IsWalkingInvisEnabled || !(buttons & IN_SPEED || flags & FL_DUCKING)
-		|| (!(flags & FL_ONGROUND) && !IsInvisInAirEnabled))
+	int flags = GetEntityFlags(client)
+
+	bool isPlayerInvisible =
+		( STMPlayers.Get(client).IsInvisNotMoving() && IsPlayerNotMoving(buttons) )
+		|| ( STMPlayers.Get(client).IsInvisWalking() && IsPlayerWalking(buttons, flags) )
+
+	if (isPlayerInvisible && IsPlayerInAir(flags))
 	{
-		if (buttons & IN_FORWARD || buttons & IN_BACK
-			|| buttons & IN_MOVELEFT || buttons & IN_MOVERIGHT
-			|| (!(flags & FL_ONGROUND) && !IsInvisInAirEnabled))
-		{
-			if (!isClientRunning[client])
-			{
-				isClientRunning[client] = true
-				OnClientStartRun(client)		
-			}
-		}
-		else 
-		{
-			if (isClientRunning[client])
-			{
-				isClientRunning[client] = false
-				OnClientEndRun(client)
-			}
-		}
+		isPlayerInvisible = isPlayerInvisible && STMPlayers.Get(client).IsInvisInAir()
+	}
+
+	if (isPlayerInvisible)
+	{
+		SetClientInvisible(client)
 	}
 	else
 	{
-		if (isClientRunning[client])
-		{
-			isClientRunning[client] = false
-			OnClientEndRun(client)
-		}
+		SetClientVisible(client)
 	}
+
 	return Plugin_Continue
 }
 
-OnClientStartRun(client)
+bool IsPlayerNotMoving(int buttons)
 {
-	if (IsAliveT(client))
-	{
-		SetClientVisible(client);
-	}
+	return !IsMoveButtonsPressed(buttons)
 }
 
-OnClientEndRun(client)
+bool IsPlayerWalking(int buttons, int flags)
 {
-	if (IsAliveT(client))
-	{
-		SetClientInvisible(client);
-	}
+	return IsMoveButtonsPressed(buttons)
+		&& (buttons & IN_SPEED || flags & FL_DUCKING)
+}
+
+bool IsPlayerInAir(int flags)
+{
+	return !(flags & FL_ONGROUND)
+}
+
+bool IsMoveButtonsPressed(int buttons)
+{
+	return buttons & IN_FORWARD || buttons & IN_BACK || buttons & IN_MOVELEFT || buttons & IN_MOVERIGHT
 }
 
 SetClientVisible(client)
 {
-	SetEntityVisible(client);
-	SetClientWeaponsVisibility(client, true);
-	IsPlayerVisible[client] = true;	
-	FadeClient(client, 255, 255, 255, 0) 
+	if (!IsPlayerVisible[client])
+	{
+		SetEntityVisible(client)
+		SetClientWeaponsVisibility(client, true)
+		IsPlayerVisible[client] = true;	
+		FadeClient(client, 255, 255, 255, 0)
+	}	 
 }
 
 SetClientInvisible(client)
 {
-	SetEntityInvisible(client);
-	SetClientWeaponsVisibility(client, false);
-	IsPlayerVisible[client] = false;
-	FadeClient(client, 64, 0, 64, 64) 
+	if (IsPlayerVisible[client])
+	{
+		SetEntityInvisible(client);
+		SetClientWeaponsVisibility(client, false);
+		IsPlayerVisible[client] = false;
+		FadeClient(client, 64, 0, 64, 64) 
+	}	
 }
 
 SetClientWeaponsVisibility(client, bool:visible)

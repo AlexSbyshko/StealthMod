@@ -13,6 +13,7 @@ public ST_Init()
 public Action:ST_Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new reason = GetEventInt(event, "reason")
+	PrintToChatAll("round end! %i", reason)
 	if (reason != _:CSRoundEnd_GameStart)
 	{		
 		new condition = GetConVarInt(SwapTeamsConditionConVar)
@@ -56,12 +57,10 @@ SwapTeams()
 			if (team == CS_TEAM_CT)
 			{
 				CS_SwitchTeam(i, CS_TEAM_T)
-				SetPlayerClassByTeam(i, CS_TEAM_T)
 			}
 			else if (team == CS_TEAM_T)
 			{
 				CS_SwitchTeam(i, CS_TEAM_CT)
-				SetPlayerClassByTeam(i, CS_TEAM_CT)
 			}
 		}
 	}
