@@ -4,7 +4,7 @@
 #include <sdkhooks>
 
 
-#define PLUGIN_VERSION "1.3.1.1"
+#define PLUGIN_VERSION "1.3.2"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
 #define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
@@ -274,18 +274,6 @@ DropWeapons(client)
 	}
 }
 
-bool:IsAliveT(client)
-{
-	return IsPlayerAlive(client) 
-		&& GetClientTeam(client) == CS_TEAM_T;
-}
-
-bool:IsAliveCT(client)
-{
-	return IsPlayerAlive(client) 
-		&& GetClientTeam(client) == CS_TEAM_CT;
-}
-
 PrintStmMessage(client, String:text[], any:...)
 {
 	decl String:message[MAX_CHAT_MESSAGE_LENGTH];
@@ -322,4 +310,19 @@ AcceptDamageFilterToHostages()
 	    SetVariantString(DAMAGE_FILTER_NAME);
 	    AcceptEntityInput(hostageEntity, "SetDamageFilter");
 	}
+}
+
+bool IsEnemy(int client, int otherClient)
+{
+	int clientTeam = GetClientTeam(client)
+	int otherClientTeam = GetClientTeam(otherClient)
+	if (clientTeam == CS_TEAM_T)
+	{
+		return otherClientTeam == CS_TEAM_CT
+	}
+	if (clientTeam == CS_TEAM_CT)
+	{
+		return otherClientTeam == CS_TEAM_T
+	}
+	return false
 }
