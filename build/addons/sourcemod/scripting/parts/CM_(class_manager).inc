@@ -363,11 +363,16 @@ public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"))
 	new team = GetEventInt(event, "team");
+	SetPlayerClassByTeam(client, team)
+}
+
+SetPlayerClassByTeam(int client, int team)
+{
 	STMPlayer player = STMPlayers.Get(client)
 	switch (team)
 	{
 		case CS_TEAM_T:
-			player.SetClassByName("terrorist")
+			player.SetClassByName("terrorist")			
 		case CS_TEAM_CT:
 			player.SetClassByName("counter-terrorist")
 		default:

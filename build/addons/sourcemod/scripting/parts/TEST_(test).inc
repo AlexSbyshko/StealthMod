@@ -7,7 +7,8 @@ public TEST_Init()
 public Action:TEST_Cmd_Test(client, args)
 {
 	PrintToChatAll("TEST1")
-	ReadClassConfigs()
+	//ReadClassConfigs()
+	SwapTeams()
 	return Plugin_Handled
 }
 

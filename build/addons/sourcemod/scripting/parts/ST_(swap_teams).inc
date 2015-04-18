@@ -56,10 +56,12 @@ SwapTeams()
 			if (team == CS_TEAM_CT)
 			{
 				CS_SwitchTeam(i, CS_TEAM_T)
+				SetPlayerClassByTeam(i, CS_TEAM_T)
 			}
 			else if (team == CS_TEAM_T)
 			{
 				CS_SwitchTeam(i, CS_TEAM_CT)
+				SetPlayerClassByTeam(i, CS_TEAM_CT)
 			}
 		}
 	}

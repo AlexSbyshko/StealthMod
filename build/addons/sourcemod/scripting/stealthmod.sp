@@ -4,7 +4,7 @@
 #include <sdkhooks>
 
 
-#define PLUGIN_VERSION "1.3.1"
+#define PLUGIN_VERSION "1.3.1.1"
 #define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
 
 #define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
@@ -62,7 +62,7 @@ public OnPluginStart()
 	RegisterPart("PV") // Player Visibility
 	RegisterPart("SG") // Speed and Gravity
 	RegisterPart("ST") // Swap Teams
-	//RegisterPart("TEST") // Test
+	RegisterPart("TEST") // Test
 
 	InitParts()
 }
