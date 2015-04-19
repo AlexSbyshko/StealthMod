@@ -19,11 +19,11 @@ new BombSpottedOffset
 
 #include "emitsoundany"
 #include "classmanager"
-#include "parts/CM_(class_manager)"
 #include "parts"
 
 #include "parts/BS_(breath_sound)"
 #include "parts/HR_(health_regen)"
+#include "parts/LCC_(load_class_configs)"
 #include "parts/MH_(max_health)"
 #include "parts/PV_(player_visibility)"
 #include "parts/RFS_(remove_footsteps)"
@@ -55,9 +55,9 @@ public OnPluginStart()
 
 	InitPartSystem()
 
-	RegisterPart("BS") // Breath Sound
-	RegisterPart("CM") // Remove Footsteps
+	RegisterPart("BS") // Breath Sound	
 	RegisterPart("HR") // Health Regen
+	RegisterPart("LCC") // Load Class Configs
 	RegisterPart("MH") // Max Health
 	RegisterPart("RFS") // Remove Footsteps
 	RegisterPart("PV") // Player Visibility
