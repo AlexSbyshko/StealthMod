@@ -15,10 +15,9 @@ public Action:TEST_Cmd_Test(client, args)
 public Action:TEST_Cmd_Test2(client, args)
 {
 	PrintToChatAll("TEST2")
-	STMPlayer player = STMPlayers.Get(client)
-	STMClass myclass = player.GetClass()
+	STMClass myclass = Player(client).GetClass()
 	char className[32]
 	myclass.GetName(className, 32)
-	PrintToChatAll("my class: %s (client %i) breath: %i", className, client, STMPlayers.Get(client).IsProducesBreathSound())
+	PrintToChatAll("my class: %s (client %i) breath: %i", className, client, Player(client).IsProducesBreathSound())
 	return Plugin_Handled
 }

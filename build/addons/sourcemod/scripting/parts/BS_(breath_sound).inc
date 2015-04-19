@@ -48,7 +48,7 @@ public BS_Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcas
 	int userId = GetEventInt(event, "userid")
 	new client = GetClientOfUserId(userId)
 	new team = GetClientTeam(client)
-	if (team != CS_TEAM_NONE && IsPlayerAlive(client) && STMPlayers.Get(client).IsProducesBreathSound())
+	if (team != CS_TEAM_NONE && IsPlayerAlive(client) && Player(client).IsProducesBreathSound())
 	{
 		StopBreathSound(client)
 		if (BreathFrequency > 0)
@@ -67,7 +67,7 @@ public BS_Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcas
 public Action:Timer_BreathSound(Handle:timer, any:userId)
 {	
 	new client = GetClientOfUserId(userId)
-	if (client && IsPlayerAlive(client) && STMPlayers.Get(client).IsProducesBreathSound())
+	if (client && IsPlayerAlive(client) && Player(client).IsProducesBreathSound())
 	{
 		EmitSoundToAllAny(BreathSound, client, SNDCHAN_BODY, SNDLEVEL_NORMAL, SND_CHANGEVOL, BreathVolume)
 		CreateTimer(BreathDuration, Timer_StopSound, GetClientUserId(client))

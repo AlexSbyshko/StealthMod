@@ -18,6 +18,7 @@ new PlayerManagerEntity
 new BombSpottedOffset
 
 #include "emitsoundany"
+#include "classmanager"
 #include "parts/CM_(class_manager)"
 #include "parts"
 
@@ -86,8 +87,7 @@ public OnClientPutInServer(client)
 	CreateTimer(5.0, Timer_PrintModInfo, GetClientUserId(client))
 	IsPlayerSpawned[client] = false
 
-	STMPlayer player = STMPlayers.Get(client)
-	player.SetClassByName("baseplayer")
+	Player(client).SetClassByName("baseplayer")
 }
 
 public Hook_PreThink(client)
@@ -158,7 +158,7 @@ public Action:Timer_PostPlayerSpawn(Handle:timer, any:userId)
 				SetClientVisible(client)
 				SetEntProp(client, Prop_Send, "m_ArmorValue", 0, 1)
 			}
-			SetClientMoney(client, STMPlayers.Get(client).GetStartMoney())
+			SetClientMoney(client, Player(client).GetStartMoney())
 			IsPlayerSpawned[client] = true
 		}
 	}

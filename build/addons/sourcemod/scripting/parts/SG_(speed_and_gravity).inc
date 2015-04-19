@@ -17,8 +17,8 @@ Client_FixSpeed(client)
 {
 	if (IsClientInGame(client))
 	{
-		new Float:speedMultiplier = STMPlayers.Get(client).GetSpeedMultiplier()
-		new Float:gravityMultiplier = (1.0 / speedMultiplier) * STMPlayers.Get(client).GetGravityMultiplier()
+		new Float:speedMultiplier = Player(client).GetSpeedMultiplier()
+		new Float:gravityMultiplier = (1.0 / speedMultiplier) * Player(client).GetGravityMultiplier()
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", speedMultiplier)
 		SetEntPropFloat(client, Prop_Data, "m_flGravity", gravityMultiplier)		
 	}

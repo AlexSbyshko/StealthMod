@@ -18,7 +18,7 @@ public Action:RFS_Event_SoundPlayed(clients[64],&numClients,String:sample[PLATFO
 		&& (StrContains(sample, "physics") != -1 || StrContains(sample, "footsteps") != -1))
 	{
 		if (IsClientInGame(entity) 
-			&& !STMPlayers.Get(entity).IsFootStepsEnabled())
+			&& !Player(entity).IsFootStepsEnabled())
 		{
 			return Plugin_Handled
 		}

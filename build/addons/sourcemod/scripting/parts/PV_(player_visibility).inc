@@ -29,12 +29,12 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 	int flags = GetEntityFlags(client)
 
 	bool isPlayerInvisible =
-		( STMPlayers.Get(client).IsInvisNotMoving() && IsPlayerNotMoving(buttons) )
-		|| ( STMPlayers.Get(client).IsInvisWalking() && IsPlayerWalking(buttons, flags) )
+		( Player(client).IsInvisNotMoving() && IsPlayerNotMoving(buttons) )
+		|| ( Player(client).IsInvisWalking() && IsPlayerWalking(buttons, flags) )
 
 	if (isPlayerInvisible && IsPlayerInAir(flags))
 	{
-		isPlayerInvisible = isPlayerInvisible && STMPlayers.Get(client).IsInvisInAir()
+		isPlayerInvisible = isPlayerInvisible && Player(client).IsInvisInAir()
 	}
 
 	if (isPlayerInvisible)

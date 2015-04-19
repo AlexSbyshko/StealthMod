@@ -7,7 +7,7 @@ public MH_Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcas
 	new client = GetClientOfUserId(GetEventInt(event, "userid"))
 	if (client)
 	{
-		int maxHealth = STMPlayers.Get(client).GetMaxHealth()
+		int maxHealth = Player(client).GetMaxHealth()
 		SetEntProp(client, Prop_Data, "m_iHealth", maxHealth)
 	}	
 }
