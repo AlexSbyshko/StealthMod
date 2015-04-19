@@ -31,7 +31,7 @@ public BS_OnMapStart()
 	PrecacheSoundAny(BreathSound)
 
 	decl String:fullSoundPath[PLATFORM_MAX_PATH]
-	Format(fullSoundPath, sizeof(fullSoundPath), "sound/%s", BreathSoundConVar)
+	Format(fullSoundPath, sizeof(fullSoundPath), "sound/%s", BreathSound)
 	AddFileToDownloadsTable(fullSoundPath)
 }
 
