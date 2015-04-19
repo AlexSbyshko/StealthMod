@@ -1,4 +1,4 @@
-static STMClass DefaultClass
+static Class DefaultClass
 
 public CM_Init()
 {
@@ -81,7 +81,7 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 	{
 		return
 	}
-	STMClass baseClass
+	Class baseClass
 	int baseClassId = STMClasses.FindByConfigName(baseClassConfigName)
 	if (baseClassId != -1)
 	{
@@ -97,7 +97,7 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, classConfigName)
 
-	STMClass newSTMClass = STMClasses.Create(name)
+	Class newSTMClass = STMClasses.Create(name)
 	newSTMClass.SetConfigName(classConfigName)
 
 	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
