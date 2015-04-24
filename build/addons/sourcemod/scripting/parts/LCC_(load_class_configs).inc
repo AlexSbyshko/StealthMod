@@ -1,6 +1,6 @@
 static Class DefaultClass
 
-public CM_Init()
+public LCC_Init()
 {
 	InitDefaultClass()
 }
@@ -14,9 +14,11 @@ void InitDefaultClass()
 	DefaultClass.SetInvisNotMoving(false)
 	DefaultClass.SetInvisInAir(false)
 	DefaultClass.SetInvisWalking(false)
+	DefaultClass.SetSpeedMultiplier(1.0)
+	DefaultClass.SetGravityMultiplier(1.0)
 }
 
-public CM_OnMapStart()
+public LCC_OnMapStart()
 {
 	ReadClassConfigs()
 }
@@ -134,7 +136,7 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 	newSTMClass.SetInvisWalking(isInvisWalking)
 }
 
-public CM_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
+public LCC_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"))
 	new team = GetEventInt(event, "team");
