@@ -4,11 +4,10 @@
 #include <sdkhooks>
 
 
-#define PLUGIN_VERSION "1.3.2.1"
-#define PLUGIN_URL "http://steamcommunity.com/groups/stealthmod"
+#define PLUGIN_VERSION "1.3.3"
+#define PLUGIN_URL "http://steamcommunity.com/groups/sm_stealthmod"
 
 #define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
-#define DAMAGE_FILTER_NAME "filter_no_weapons_damage"
 
 new bool:IsPlayerVisible[MAXPLAYERS + 1];
 new bool:IsPlayerSpawned[MAXPLAYERS + 1];
@@ -22,6 +21,7 @@ new BombSpottedOffset
 #include "parts"
 
 #include "parts/BS_(breath_sound)"
+#include "parts/DHD_(disable_hostage_damage)"
 #include "parts/HR_(health_regen)"
 #include "parts/LCC_(load_class_configs)"
 #include "parts/MH_(max_health)"
@@ -56,6 +56,7 @@ public OnPluginStart()
 	InitPartSystem()
 
 	RegisterPart("BS") // Breath Sound	
+	RegisterPart("DHD") // Disable Hostage Damage
 	RegisterPart("HR") // Health Regen
 	RegisterPart("LCC") // Load Class Configs
 	RegisterPart("MH") // Max Health
@@ -290,26 +291,6 @@ bool:IsClientCanAttack(client)
 		return true;
 	}
 	return false;
-}
-
-SpawnDamageFilter()
-{
-	new damageFilterEntity = CreateEntityByName("filter_damage_type")
-	DispatchKeyValue(damageFilterEntity, "targetname", DAMAGE_FILTER_NAME)
-	DispatchKeyValue(damageFilterEntity, "negated", "1")
-	DispatchKeyValue(damageFilterEntity, "damagetype", "4098")
-	DispatchSpawn(damageFilterEntity)
-	ActivateEntity(damageFilterEntity)
-}
-
-AcceptDamageFilterToHostages()
-{
-	new hostageEntity = -1;
-	while ((hostageEntity = FindEntityByClassname(hostageEntity, "hostage_entity")) != INVALID_ENT_REFERENCE) 
-	{
-	    SetVariantString(DAMAGE_FILTER_NAME);
-	    AcceptEntityInput(hostageEntity, "SetDamageFilter");
-	}
 }
 
 bool IsEnemy(int client, int otherClient)
