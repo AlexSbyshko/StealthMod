@@ -30,6 +30,7 @@ new BombSpottedOffset
 #include "parts/SG_(speed_and_gravity)"
 #include "parts/ST_(swap_teams)"
 #include "parts/TEST_(test)"
+#include "parts/WH_(wall_hang)"
 
 
 public Plugin:myinfo = 
@@ -47,7 +48,6 @@ public OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath)
 	HookEvent("item_pickup", Event_ItemPickup)
 	HookEvent("round_start", Event_RoundStart)
-	HookEvent("round_end", Event_RoundEnd)
 	BombSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bBombSpotted")
 	PlayerSpottedOffset = FindSendPropOffs("CCSPlayerResource", "m_bPlayerSpotted")
 	
@@ -65,6 +65,7 @@ public OnPluginStart()
 	RegisterPart("SG") // Speed and Gravity
 	RegisterPart("ST") // Swap Teams
 	RegisterPart("TEST") // Test
+	RegisterPart("WH") // Wall Hang
 
 	InitParts()
 }
@@ -124,13 +125,6 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 {
 	PlayerManagerEntity = FindEntityByClassname(0, "cs_player_manager");
 	RoundCounter++;
-	SpawnDamageFilter()
-	AcceptDamageFilterToHostages()
-}
-
-public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	return Plugin_Continue
 }
 
 public Action:Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)

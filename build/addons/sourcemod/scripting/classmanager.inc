@@ -2,6 +2,7 @@
 #define CLASS_NAME_LENGTH 64
 
 static int ClassesCount
+
 static char Class_Name[MAX_CLASSES][CLASS_NAME_LENGTH]
 static char Class_ConfigName[MAX_CLASSES][CLASS_NAME_LENGTH]
 static int Class_StartMoney[MAX_CLASSES]
@@ -10,11 +11,14 @@ static int Class_HealthRegenAmount[MAX_CLASSES]
 static float Class_HealthRegenPeriod[MAX_CLASSES]
 static float Class_SpeedMultiplier[MAX_CLASSES]
 static float Class_GravityMultiplier[MAX_CLASSES]
+static bool Class_IsCanWallHang[MAX_CLASSES]
+static bool Class_IsChoosable[MAX_CLASSES]
 static bool Class_IsProducesBreathSound[MAX_CLASSES]
 static bool Class_IsFootStepsEnabled[MAX_CLASSES]
 static bool Class_IsInvisNotMoving[MAX_CLASSES]
 static bool Class_IsInvisInAir[MAX_CLASSES]
 static bool Class_IsInvisWalking[MAX_CLASSES]
+
 
 methodmap Class
 {
@@ -27,6 +31,28 @@ methodmap Class
 	{
 		public get() { return view_as<int>(this); }
 	}
+
+	public bool IsCanWallHang()
+	{
+		return Class_IsCanWallHang[this.Id]
+	}
+
+	public void SetCanWallHang(bool value)
+	{
+		Class_IsCanWallHang[this.Id] = value
+	}
+
+
+	public bool IsChoosable()
+	{
+		return Class_IsChoosable[this.Id]
+	}
+
+	public void SetChoosable(bool value)
+	{
+		Class_IsChoosable[this.Id] = value
+	}
+
 
 	public void GetConfigName(char[] buffer, int maxLenght)
 	{
@@ -171,21 +197,18 @@ methodmap Class
 	}
 }
 
-static Class Classes[MAX_CLASSES]
-
-methodmap STMClasses
+methodmap Classes
 {
 	public static Class Create(const char[] name)
 	{
-		Class newClass = Class(ClassesCount)
-		newClass.SetName(name)
-		Classes[ClassesCount++] = newClass		
+		Class newClass = Class(ClassesCount++)
+		newClass.SetName(name)	
 		return newClass
 	}
 
 	public static Class Get(int id)
 	{
-		return Classes[id]
+		return Class(id)
 	}
 
 	public static int FindByConfigName(const char[] name)
@@ -194,7 +217,7 @@ methodmap STMClasses
 		{
 			if (StrEqual(name, Class_ConfigName[i], false))
 			{
-				return STMClasses.Get(i).Id
+				return Classes.Get(i).Id
 			}
 		}
 		return -1
@@ -227,10 +250,10 @@ methodmap Player
 
 	public void SetClassByName(const char[] name)
 	{
-		int stmClassId = STMClasses.FindByConfigName(name)
+		int stmClassId = Classes.FindByConfigName(name)
 		if (stmClassId != -1)
 		{
-			Class stmClass = STMClasses.Get(stmClassId)
+			Class stmClass = Classes.Get(stmClassId)
 			this.SetClass(stmClass)
 		}
 	}
@@ -288,5 +311,10 @@ methodmap Player
 	public bool IsInvisWalking()
 	{
 		return this.GetClass().IsInvisWalking()
+	}
+
+	public bool IsCanWallHang()
+	{
+		return this.GetClass().IsCanWallHang()
 	}
 }

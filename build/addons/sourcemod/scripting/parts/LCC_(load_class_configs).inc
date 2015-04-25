@@ -7,7 +7,7 @@ public LCC_Init()
 
 void InitDefaultClass()
 {
-	DefaultClass = STMClasses.Create("DefaultClass")
+	DefaultClass = Classes.Create("DefaultClass")
 	DefaultClass.SetStartMoney(100)
 	DefaultClass.SetProducesBreathSound(false)
 	DefaultClass.SetFootstepsEnabled(true)
@@ -16,6 +16,8 @@ void InitDefaultClass()
 	DefaultClass.SetInvisWalking(false)
 	DefaultClass.SetSpeedMultiplier(1.0)
 	DefaultClass.SetGravityMultiplier(1.0)
+	DefaultClass.SetChoosable(false)
+	DefaultClass.SetCanWallHang(false)
 }
 
 public LCC_OnMapStart()
@@ -84,10 +86,10 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 		return
 	}
 	Class baseClass
-	int baseClassId = STMClasses.FindByConfigName(baseClassConfigName)
+	int baseClassId = Classes.FindByConfigName(baseClassConfigName)
 	if (baseClassId != -1)
 	{
-		baseClass = STMClasses.Get(baseClassId)
+		baseClass = Classes.Get(baseClassId)
 	}
 	else
 	{
@@ -99,41 +101,47 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	KvGetString(kv, "name", name, CLASS_NAME_LENGTH, classConfigName)
 
-	Class newSTMClass = STMClasses.Create(name)
-	newSTMClass.SetConfigName(classConfigName)
+	Class newClass = Classes.Create(name)
+	newClass.SetConfigName(classConfigName)
 
 	int startMoney = KvGetNum(kv, "start_money", baseClass.GetStartMoney())
-	newSTMClass.SetStartMoney(startMoney)
+	newClass.SetStartMoney(startMoney)
 
 	int maxHealth = KvGetNum(kv, "max_health", baseClass.GetMaxHealth())
-	newSTMClass.SetMaxHealth(maxHealth)
+	newClass.SetMaxHealth(maxHealth)
 
 	int healthRegenAmount = KvGetNum(kv, "hp_regen_amount", baseClass.GetHealthRegenAmount())
-	newSTMClass.SetHealthRegenAmount(healthRegenAmount)
+	newClass.SetHealthRegenAmount(healthRegenAmount)
 
 	float healthRegenPeriod = KvGetFloat(kv, "hp_regen_period", baseClass.GetHealthRegenPeriod())
-	newSTMClass.SetHealthRegenPeriod(healthRegenPeriod)
+	newClass.SetHealthRegenPeriod(healthRegenPeriod)
 
 	float gravityMultiplier = KvGetFloat(kv, "gravity_multiplier", baseClass.GetGravityMultiplier())
-	newSTMClass.SetGravityMultiplier(gravityMultiplier)
+	newClass.SetGravityMultiplier(gravityMultiplier)
 
 	float speedMultiplier = KvGetFloat(kv, "speed_multiplier", baseClass.GetSpeedMultiplier())
-	newSTMClass.SetSpeedMultiplier(speedMultiplier)
+	newClass.SetSpeedMultiplier(speedMultiplier)
 
 	bool isProducesBrathSound = KvGetNum(kv, "produces_breath_sound", baseClass.IsProducesBreathSound()) > 0
-	newSTMClass.SetProducesBreathSound(isProducesBrathSound)
+	newClass.SetProducesBreathSound(isProducesBrathSound)
 
 	bool isFootStepsEnabled = KvGetNum(kv, "footsteps_enabled", baseClass.IsFootStepsEnabled()) > 0
-	newSTMClass.SetFootstepsEnabled(isFootStepsEnabled)
+	newClass.SetFootstepsEnabled(isFootStepsEnabled)
 
 	bool isInvisNotMoving = KvGetNum(kv, "is_invisible_when_not_moving", baseClass.IsInvisNotMoving()) > 0
-	newSTMClass.SetInvisNotMoving(isInvisNotMoving)
+	newClass.SetInvisNotMoving(isInvisNotMoving)
 
 	bool isInvisInAir = KvGetNum(kv, "is_invisible_in_the_air", baseClass.IsInvisInAir()) > 0
-	newSTMClass.SetInvisInAir(isInvisInAir)
+	newClass.SetInvisInAir(isInvisInAir)
 
 	bool isInvisWalking = KvGetNum(kv, "is_invisible_when_walking", baseClass.IsInvisWalking()) > 0
-	newSTMClass.SetInvisWalking(isInvisWalking)
+	newClass.SetInvisWalking(isInvisWalking)
+
+	bool isChoosable = KvGetNum(kv, "is_choosable", baseClass.IsChoosable()) > 0
+	newClass.SetChoosable(isChoosable)
+
+	bool isCanWallHang = KvGetNum(kv, "is_can_wallhang", baseClass.IsCanWallHang()) > 0
+	newClass.SetCanWallHang(isCanWallHang)
 }
 
 public LCC_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
