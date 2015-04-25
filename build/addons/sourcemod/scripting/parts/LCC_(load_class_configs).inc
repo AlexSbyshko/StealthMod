@@ -18,6 +18,7 @@ void InitDefaultClass()
 	DefaultClass.SetGravityMultiplier(1.0)
 	DefaultClass.SetChoosable(false)
 	DefaultClass.SetCanWallHang(false)
+	DefaultClass.SetHealthForKill(0)
 }
 
 public LCC_OnMapStart()
@@ -142,6 +143,9 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	bool isCanWallHang = KvGetNum(kv, "is_can_wallhang", baseClass.IsCanWallHang()) > 0
 	newClass.SetCanWallHang(isCanWallHang)
+
+	int healthForKill = KvGetNum(kv, "hp_for_kill", baseClass.GetHealthForKill())
+	newClass.SetHealthForKill(healthForKill)
 }
 
 public LCC_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
