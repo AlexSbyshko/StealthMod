@@ -8,6 +8,7 @@ static char Class_ConfigName[MAX_CLASSES][CLASS_NAME_LENGTH]
 static int Class_StartMoney[MAX_CLASSES]
 static int Class_MaxHealth[MAX_CLASSES]
 static int Class_HealthRegenAmount[MAX_CLASSES]
+static int Class_HealthForKill[MAX_CLASSES]
 static float Class_HealthRegenPeriod[MAX_CLASSES]
 static float Class_SpeedMultiplier[MAX_CLASSES]
 static float Class_GravityMultiplier[MAX_CLASSES]
@@ -195,6 +196,17 @@ methodmap Class
 	{
 		return Class_IsInvisWalking[this.Id]
 	}
+
+
+	public int GetHealthForKill()
+	{
+		return Class_HealthForKill[this.Id]
+	}
+
+	public void SetHealthForKill(int value)
+	{
+		Class_HealthForKill[this.Id] = value
+	}
 }
 
 methodmap Classes
@@ -316,5 +328,10 @@ methodmap Player
 	public bool IsCanWallHang()
 	{
 		return this.GetClass().IsCanWallHang()
+	}
+
+	public int GetHealthForKill()
+	{
+		return this.GetClass().GetHealthForKill()
 	}
 }
