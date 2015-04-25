@@ -9,6 +9,7 @@ static int Class_StartMoney[MAX_CLASSES]
 static int Class_MaxHealth[MAX_CLASSES]
 static int Class_HealthRegenAmount[MAX_CLASSES]
 static int Class_HealthForKill[MAX_CLASSES]
+static float Class_DamageAmplifier[MAX_CLASSES]
 static float Class_HealthRegenPeriod[MAX_CLASSES]
 static float Class_SpeedMultiplier[MAX_CLASSES]
 static float Class_GravityMultiplier[MAX_CLASSES]
@@ -107,6 +108,17 @@ methodmap Class
 	public void SetHealthRegenAmount(int value)
 	{
 		Class_HealthRegenAmount[this.Id] = value
+	}
+
+
+	public float GetDamageAmplifier()
+	{
+		return Class_DamageAmplifier[this.Id]
+	}
+
+	public void SetDamageAmplifier(float value)
+	{
+		Class_DamageAmplifier[this.Id] = value
 	}
 
 
@@ -283,6 +295,11 @@ methodmap Player
 	public int GetHealthRegenAmount()
 	{
 		return this.GetClass().GetHealthRegenAmount()
+	}
+
+	public float GetDamageAmplifier()
+	{
+		return this.GetClass().GetDamageAmplifier()
 	}
 
 	public float GetHealthRegenPeriod()

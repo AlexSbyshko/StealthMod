@@ -21,6 +21,7 @@ new BombSpottedOffset
 #include "parts"
 
 #include "parts/BS_(breath_sound)"
+#include "parts/DA_(damage_amplifier)"
 #include "parts/DHD_(disable_hostage_damage)"
 #include "parts/HFK_(health_for_kill)"
 #include "parts/HR_(health_regen)"
@@ -57,6 +58,7 @@ public OnPluginStart()
 	InitPartSystem()
 
 	RegisterPart("BS") // Breath Sound	
+	RegisterPart("DA") // Damage Amplifier
 	RegisterPart("DHD") // Disable Hostage Damage
 	RegisterPart("HFK") // Health For Kill
 	RegisterPart("HR") // Health Regen

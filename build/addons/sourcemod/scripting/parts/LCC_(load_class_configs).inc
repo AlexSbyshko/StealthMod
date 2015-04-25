@@ -19,6 +19,7 @@ void InitDefaultClass()
 	DefaultClass.SetChoosable(false)
 	DefaultClass.SetCanWallHang(false)
 	DefaultClass.SetHealthForKill(0)
+	DefaultClass.SetDamageAmplifier(1.0)
 }
 
 public LCC_OnMapStart()
@@ -113,6 +114,9 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	int healthRegenAmount = KvGetNum(kv, "hp_regen_amount", baseClass.GetHealthRegenAmount())
 	newClass.SetHealthRegenAmount(healthRegenAmount)
+
+	float damageAmplifier = KvGetFloat(kv, "damage_amplifier", baseClass.GetDamageAmplifier())
+	newClass.SetDamageAmplifier(damageAmplifier)
 
 	float healthRegenPeriod = KvGetFloat(kv, "hp_regen_period", baseClass.GetHealthRegenPeriod())
 	newClass.SetHealthRegenPeriod(healthRegenPeriod)
