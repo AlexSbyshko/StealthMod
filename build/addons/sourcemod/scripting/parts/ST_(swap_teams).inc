@@ -4,10 +4,11 @@ static Handle:SwapTeamsConditionConVar
 const SWAP_CONDITION_ROUND_END	= 0
 const SWAP_CONDITION_CT_WIN 	= 1
 const SWAP_CONDITION_T_WIN 		= 2
+const SWAP_CONDITION_NO_SWAP	= 3
 
 public ST_Init()
 {
-	SwapTeamsConditionConVar = CreateConVar("stm_swap_teams_condition", "0", "Swap teams condition:\n0 - End of any round\n1 - CT win\n2 - T win", 0, true, 0.0, true, 2.0)
+	SwapTeamsConditionConVar = CreateConVar("stm_swap_teams_condition", "0", "Swap teams condition:\n0 - End of any round\n1 - CT win\n2 - T win\n3 - no swap", 0, true, 0.0, true, 2.0)
 }
 
 public Action:ST_Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
@@ -38,6 +39,10 @@ public Action:ST_Event_RoundEnd(Handle:event, const String:name[], bool:dontBroa
 			{
 				SwapTeams()
 			}
+			
+		case SWAP_CONDITION_NO_SWAP:
+			
+			return Plugin_Continue;
 		}
 	}
 	return Plugin_Continue

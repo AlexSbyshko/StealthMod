@@ -1,8 +1,17 @@
+static WeaponSet EmptyWeaponSet
 static Class DefaultClass
 
 public LCC_Init()
 {
-	InitDefaultClass()
+	EmptyWeaponSet = WeaponSet(-1)
+}
+
+public LCC_OnMapStart()
+{
+	Classes.Clear()	
+	InitDefaultClass()	
+	ReadWeaponsConfigs()
+	ReadClassConfigs()
 }
 
 void InitDefaultClass()
@@ -22,11 +31,81 @@ void InitDefaultClass()
 	DefaultClass.SetDamageAmplifier(1.0)
 }
 
-public LCC_OnMapStart()
+void InitEmptyItemSet()
 {
-	ReadClassConfigs()
+	EmptyWeaponSet = WeaponSets.Create("empty")
 }
 
+void ReadWeaponsConfigs()
+{
+	ItemTypes.Clear()
+	WeaponSets.Clear()
+	Weapons.Clear()
+	InitEmptyItemSet()
+
+	Handle kv = CreateKeyValues("itemsets")
+	FileToKeyValues(kv, "cfg/sourcemod/stealthmod/items.cfg")
+
+	if (KvGotoFirstSubKey(kv))
+	{	
+		char setName[ITEMSET_NAME_LENGTH]
+		do
+		{
+			KvGetSectionName(kv, setName, ITEMSET_NAME_LENGTH)
+
+			WeaponSet weaponSet = WeaponSets.Create(setName)
+
+			if (KvGotoFirstSubKey(kv))
+			{
+				char itemClassName[ITEM_NAME_LENGTH]
+				char itemName[ITEM_NAME_LENGTH]
+				char itemTypeName[ITEMTYPE_NAME_LENGTH]
+				do
+				{
+					KvGetString(kv, "type", itemTypeName, sizeof(itemTypeName))
+					ItemType itemType
+					int itemTypeId = ItemTypes.FindByNameAndSetId(itemTypeName, weaponSet.Id)
+					if (itemTypeId == -1)
+					{
+						itemType = ItemTypes.Create(itemTypeName)
+						itemType.SetSetId(weaponSet.Id)
+						itemTypeId = itemType.Id
+						PrintToChatAll("new type %s, id: %i", itemTypeName, itemTypeId)
+					}
+					else
+					{
+						PrintToChatAll("type %s found, id: %i", itemTypeName, itemTypeId)
+					}
+
+					KvGetSectionName(kv, itemClassName, sizeof(itemClassName))
+					Item item = Weapons.Create(itemClassName)
+					
+					KvGetString(kv, "name", itemName, sizeof(itemName))
+					item.SetName(itemName)
+					
+					int ammo = KvGetNum(kv, "ammo", -1)
+					item.SetAmmo(ammo)
+
+					bool isForPurchase = KvGetNum(kv, "for_purchase", 0) > 0
+					item.SetForPurchase(isForPurchase)
+
+					bool isDefault = KvGetNum(kv, "default", 0) > 0
+					item.SetDefault(isDefault)
+
+					PrintToChatAll("Set weapon %s, type: %i", itemName, itemTypeId)
+					item.SetTypeId(itemTypeId)
+
+					weaponSet.AddWeapon(item)
+				}
+				while (KvGotoNextKey(kv))
+				KvGoBack(kv)
+			}
+		}
+		while (KvGotoNextKey(kv))
+	}
+
+	delete kv
+}
 
 void ReadClassConfigs()
 {
@@ -150,6 +229,18 @@ void ReadClassConfig(Handle kv, const char[] classConfigName, const char[] baseC
 
 	int healthForKill = KvGetNum(kv, "hp_for_kill", baseClass.GetHealthForKill())
 	newClass.SetHealthForKill(healthForKill)
+
+	char weaponSetName[ITEMSET_NAME_LENGTH]
+	KvGetString(kv, "itemset", weaponSetName, ITEMSET_NAME_LENGTH, "")
+	if (StrEqual(weaponSetName, ""))
+	{
+		newClass.SetWeaponSet(EmptyWeaponSet)
+	}
+	else
+	{
+		int weaponSetId = WeaponSets.FindByName(weaponSetName)
+		newClass.SetWeaponSet(WeaponSet(weaponSetId))
+	}
 }
 
 public LCC_Event_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)

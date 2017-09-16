@@ -20,6 +20,7 @@ static bool Class_IsFootStepsEnabled[MAX_CLASSES]
 static bool Class_IsInvisNotMoving[MAX_CLASSES]
 static bool Class_IsInvisInAir[MAX_CLASSES]
 static bool Class_IsInvisWalking[MAX_CLASSES]
+static WeaponSet Class_WeaponSet[MAX_CLASSES]
 
 
 methodmap Class
@@ -219,6 +220,17 @@ methodmap Class
 	{
 		Class_HealthForKill[this.Id] = value
 	}
+
+
+	public WeaponSet GetWeaponSet()
+	{
+		return Class_WeaponSet[this.Id]
+	}
+
+	public void SetWeaponSet(WeaponSet weaponSet)
+	{
+		Class_WeaponSet[this.Id] = weaponSet
+	}
 }
 
 methodmap Classes
@@ -246,6 +258,16 @@ methodmap Classes
 		}
 		return -1
 	}
+
+	public static void Clear()
+	{
+		ClassesCount = 0
+	}
+
+	property int Count
+	{
+        public get() { return ClassesCount; }
+    }
 }
 
 static Class Player_Class[MAXPLAYERS+1]
@@ -350,5 +372,10 @@ methodmap Player
 	public int GetHealthForKill()
 	{
 		return this.GetClass().GetHealthForKill()
+	}
+
+	public WeaponSet GetWeaponSet()
+	{
+		return this.GetClass().GetWeaponSet()
 	}
 }

@@ -4,7 +4,7 @@
 #include <sdkhooks>
 
 
-#define PLUGIN_VERSION "1.3.3"
+#define PLUGIN_VERSION "1.3.5"
 #define PLUGIN_URL "http://steamcommunity.com/groups/sm_stealthmod"
 
 #define STM_CONFIG_DIRECTORY "cfg/sourcemod/stealthmod"
@@ -17,9 +17,11 @@ new PlayerManagerEntity
 new BombSpottedOffset
 
 #include "emitsoundany"
+#include "weaponsmanager"
 #include "classmanager"
 #include "parts"
 
+#include "parts/BM_(buy_menu)"
 #include "parts/BS_(breath_sound)"
 #include "parts/DA_(damage_amplifier)"
 #include "parts/DHD_(disable_hostage_damage)"
@@ -57,6 +59,7 @@ public OnPluginStart()
 
 	InitPartSystem()
 
+	RegisterPart("BM") // Buy Menu
 	RegisterPart("BS") // Breath Sound	
 	RegisterPart("DA") // Damage Amplifier
 	RegisterPart("DHD") // Disable Hostage Damage
@@ -145,18 +148,9 @@ public Action:Timer_PostPlayerSpawn(Handle:timer, any:userId)
 	{
 		if (IsPlayerAlive(client))
 		{			
-			new team = GetClientTeam(client);
-			if (team == CS_TEAM_T)
-			{
-				StripWeapons(client)
-				GivePlayerItem(client, "item_assaultsuit")
-				SetClientInvisible(client)
-			}
-			else
-			{
-				SetClientVisible(client)
-				SetEntProp(client, Prop_Send, "m_ArmorValue", 0, 1)
-			}
+			SetEntProp(client, Prop_Send, "m_ArmorValue", 0, 1)
+			StripWeapons(client)
+			GivePlayerDefaultItems(client)
 			SetClientMoney(client, Player(client).GetStartMoney())
 			IsPlayerSpawned[client] = true
 		}
@@ -164,17 +158,23 @@ public Action:Timer_PostPlayerSpawn(Handle:timer, any:userId)
 	return Plugin_Continue;
 }
 
+void GivePlayerDefaultItems(client)
+{
+	WeaponSet itemSet = Player(client).GetWeaponSet()
+	
+	for (int i = 0; i < itemSet.WeaponsCount; i++)
+	{
+		Item item = itemSet.GetWeapon(i)
+		if (item.IsDefault())
+		{
+			GivePlayerItemById(client, item.Id)
+		}
+	}
+}
+
 public Action:CS_OnBuyCommand(client, const String:weapon[])
 {
-	if (GetClientTeam(client) == CS_TEAM_T)
-	{
-		return Plugin_Handled
-	}
-	if (StrEqual(weapon, "vesthelm") || StrEqual(weapon, "vest"))
-	{
-		return Plugin_Handled
-	}
-	return Plugin_Continue
+	return Plugin_Handled
 }
 
 public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
@@ -251,18 +251,22 @@ StripWeapons(client)
 			RemovePlayerItem(client, weapon);
 			if (IsValidEdict(weapon))
 			{
-				RemoveEdict(weapon);
+				RemoveEdict(weapon)
 			}
 		}
 	}
-	GivePlayerItem(client, "weapon_knife");
+	//GivePlayerItem(client, "weapon_knife")
 }
 
 DropWeapons(client)
 {
 	new weapon;
-	for (new i = 0; i < CS_SLOT_C4 && i != 2; i++)
+	for (new i = 0; i < CS_SLOT_C4; i++)
 	{
+		if (i == 2)
+		{
+			continue
+		}
 		if ((weapon = GetPlayerWeaponSlot(client, i)) != -1)
 		{  
 			if (IsValidEdict(weapon))
@@ -305,3 +309,4 @@ bool IsEnemy(int client, int otherClient)
 	}
 	return false
 }
+

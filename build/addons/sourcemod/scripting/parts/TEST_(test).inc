@@ -7,17 +7,21 @@ public TEST_Init()
 public Action:TEST_Cmd_Test(client, args)
 {
 	PrintToChatAll("TEST1")
+	ShowBuyMenu(client)
+	//ReadWeaponsConfigs()
 	//ReadClassConfigs()
-	SwapTeams()
+	//SwapTeams()
 	return Plugin_Handled
 }
 
 public Action:TEST_Cmd_Test2(client, args)
 {
-	PrintToChatAll("TEST2")
-	Class myclass = Player(client).GetClass()
-	char className[32]
-	myclass.GetName(className, 32)
-	PrintToChatAll("my class: %s (client %i) breath: %i", className, client, Player(client).IsProducesBreathSound())
+	ReadWeaponsConfigs()
 	return Plugin_Handled
+}
+
+public Action:CS_OnCSWeaponDrop(client, weaponIndex)
+{
+	PrintToChatAll("client %i drop %i", client, weaponIndex)
+	return Plugin_Continue
 }
